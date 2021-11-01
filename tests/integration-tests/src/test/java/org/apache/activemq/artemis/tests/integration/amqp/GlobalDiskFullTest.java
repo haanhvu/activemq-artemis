@@ -51,11 +51,18 @@ public class GlobalDiskFullTest extends AmqpClientTestSupport {
          }
 
          @Override
-         public void over(long usableSpace, long totalSpace) {
+         public void overMaxUsage(long usableSpace, long totalSpace) {
             latch.countDown();
          }
          @Override
-         public void under(long usableSpace, long totalSpace) {
+         public void underMaxUsage(long usableSpace, long totalSpace) {
+         }
+
+         @Override
+         public void underMinDiskFree(long usableSpace, long minFreeSpace) {
+         }
+         @Override
+         public void overMinDiskFree(long usableSpace, long minFreeSpace) {
          }
       });
 
