@@ -217,12 +217,33 @@ public class FileStoreMonitor extends ActiveMQScheduledComponent {
 
       void tick(long usableSpace, long totalSpace);
 
-      void overMaxUsage(long usableSpace, long totalSpace);
+      /**
+       * @deprecated Use overMaxUsage instead
+       */
+      @Deprecated
+      default void over(long usableSpace, long totalSpace) {
+      }
 
-      void underMaxUsage(long usableSpace, long totalSpace);
+      /**
+       * @deprecated Use underMaxUsage instead
+       */
+      @Deprecated
+      default void under(long usableSpace, long totalSpace) {
+      }
 
-      void overMinDiskFree(long usableSpace, long minFreeSpace);
+      default void overMaxUsage(long usableSpace, long totalSpace) {
+         // this is here just to support older version of the API
+         over(usableSpace, totalSpace);
+      }
 
-      void underMinDiskFree(long usableSpace, long minFreeSpace);
+      default void underMaxUsage(long usableSpace, long totalSpace) {
+         under(usableSpace, totalSpace);
+      }
+
+      default void overMinDiskFree(long usableSpace, long minFreeSpace) {
+      }
+
+      default void underMinDiskFree(long usableSpace, long minFreeSpace) {
+      }
    }
 }
