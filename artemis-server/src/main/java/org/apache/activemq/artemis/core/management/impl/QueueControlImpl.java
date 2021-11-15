@@ -1609,6 +1609,61 @@ public class QueueControlImpl extends AbstractControl implements QueueControl {
    }
 
    @Override
+   public CompositeData[] browseFromStartOfPage(int page, int pageSize) throws Exception {
+      return browseFromStartOfPage(page, pageSize, null);
+   }
+
+   @Override
+   public CompositeData[] browseFromStartOfPage(int page, int pageSize, String filter) throws Exception {
+      if (AuditLogger.isBaseLoggingEnabled()) {
+         AuditLogger.browse(queue, page, pageSize);
+      }
+      checkStarted();
+
+      clearIO();
+      try {
+         int start = (page - 1) * pageSize;
+         long index = (long) start;
+         long end = Math.min(page * pageSize, queue.getMessageCount());
+
+         ArrayList<CompositeData> c = new ArrayList<>();
+         Filter thefilter = FilterImpl.createFilter(filter);
+         queue.flushExecutor();
+
+         final int attributeSizeLimit = addressSettingsRepository.getMatch(address).getManagementMessageAttributeSizeLimit();
+         try (LinkedListIterator<MessageReference> iterator = queue.browserIterator(start)) {
+            try {
+               while (iterator.hasNext() && index < end) {
+                  MessageReference ref = iterator.next();
+                  if (thefilter == null || thefilter.match(ref.getMessage())) {
+                     c.add(ref.getMessage().toCompositeData(attributeSizeLimit, ref.getDeliveryCount()));
+                     //we only increase the index if we add a message, otherwise we could stop before we get to a filtered message
+                     index++;
+                  }
+               }
+            } catch (NoSuchElementException ignored) {
+               // this could happen through paging browsing
+            }
+
+            CompositeData[] rc = new CompositeData[c.size()];
+            c.toArray(rc);
+            if (AuditLogger.isResourceLoggingEnabled()) {
+               AuditLogger.browseMessagesSuccess(queue.getName().toString(), c.size());
+            }
+            return rc;
+         }
+      } catch (Exception e) {
+         logger.warn(e.getMessage(), e);
+         if (AuditLogger.isResourceLoggingEnabled()) {
+            AuditLogger.browseMessagesFailure(queue.getName().toString());
+         }
+         throw new IllegalStateException(e.getMessage());
+      } finally {
+         blockOnIO();
+      }
+   }
+
+   @Override
    public CompositeData[] browse() throws Exception {
       return browse(null);
    }

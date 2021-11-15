@@ -429,6 +429,8 @@ public interface Queue extends Bindable,CriticalComponent {
 
    LinkedListIterator<MessageReference> browserIterator();
 
+   LinkedListIterator<MessageReference> browserIterator(int startIndex);
+
    SimpleString getExpiryAddress();
 
    /**

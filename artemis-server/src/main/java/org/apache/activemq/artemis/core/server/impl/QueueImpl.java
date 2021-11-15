@@ -1653,6 +1653,11 @@ public class QueueImpl extends CriticalComponentImpl implements Queue {
    }
 
    @Override
+   public QueueBrowserIterator browserIterator(int startIndex) {
+      return new QueueBrowserIterator(startIndex);
+   }
+
+   @Override
    public synchronized MessageReference removeReferenceWithID(final long id1) throws Exception {
       try (LinkedListIterator<MessageReference> iterator = iterator()) {
 
@@ -4322,6 +4327,10 @@ public class QueueImpl extends CriticalComponentImpl implements Queue {
 
       private QueueBrowserIterator() {
          messagesIterator = new SynchronizedIterator(messageReferences.iterator());
+      }
+
+      private QueueBrowserIterator(int startIndex) {
+         messagesIterator = new SynchronizedIterator(messageReferences.iterator(startIndex));
       }
 
       @Override

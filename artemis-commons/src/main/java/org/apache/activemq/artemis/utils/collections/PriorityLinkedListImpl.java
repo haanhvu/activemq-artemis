@@ -192,6 +192,11 @@ public class PriorityLinkedListImpl<E> implements PriorityLinkedList<E> {
       return new PriorityLinkedListIterator();
    }
 
+   @Override
+   public LinkedListIterator<E> iterator(int startIndex) {
+      return new PriorityLinkedListIterator(startIndex);
+   }
+
    private class PriorityLinkedListIterator implements LinkedListIterator<E> {
 
       private int index;
@@ -206,6 +211,10 @@ public class PriorityLinkedListImpl<E> implements PriorityLinkedList<E> {
 
       PriorityLinkedListIterator() {
          index = levels.length - 1;
+      }
+
+      PriorityLinkedListIterator(int startIndex) {
+         index = startIndex;
       }
 
       @Override

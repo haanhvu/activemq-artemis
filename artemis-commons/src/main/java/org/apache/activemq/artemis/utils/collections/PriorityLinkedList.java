@@ -49,6 +49,8 @@ public interface PriorityLinkedList<E> {
 
    LinkedListIterator<E> iterator();
 
+   LinkedListIterator<E> iterator(int startIndex);
+
    /**
     * Returns {@code true} if empty, {@code false} otherwise.<br>
     * It is safe to be called concurrently.
